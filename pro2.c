@@ -7,9 +7,9 @@ void decode_file(char* file_decode)
 	int total_chars;
 	unsigned char ch;	
 	list_t L; 
-	char h_codes[256][25];
+	char h_codes[256][256];
 	init_codes(h_codes);
-	char code[25]="";	
+	char code[256]="";	
 	
 	fp_write=fopen(file_decode,"w");
 	fp_read=fopen("encoded.txt","r");
@@ -30,8 +30,8 @@ void decode_file(char* file_decode)
 		
 		ch=fgetc(fp_read);
 		//total_chars--;
-		unsigned char local_var;
-		unsigned char temp[25];	
+	        int local_var;
+		unsigned char temp[256];	
 		int end=0;
 		
 		get_code(temp,ch);
@@ -40,11 +40,11 @@ void decode_file(char* file_decode)
 		while( !end )
 		{
 			local_var=find_char(code,h_codes);
-			Lshift_char( code  , strlen( h_codes[local_var] ) );
-			end = (local_var == 255);
+			end = (local_var == -1);
 			if(!end)
 			{ 
-				fputc( local_var , fp_write );
+			   Lshift_char( code  , strlen( h_codes[local_var] ) );
+				fputc( (unsigned char)local_var , fp_write );
 				//printf("%c",local_var);
 				total_chars--;
 			}
@@ -57,9 +57,9 @@ void decode_file(char* file_decode)
 
 }
 
-unsigned char find_char(char* code, char h_codes[256][25])
+int find_char(char* code, char h_codes[256][256])
 {
-	char local_var[25]="";
+	char local_var[256]="";
 	int i=0,j=0;
 	
 	for(i=0 ; i<strlen(code) ; ++i)
@@ -72,11 +72,11 @@ unsigned char find_char(char* code, char h_codes[256][25])
 			return j;
 		}
 	}
-	return 255;		//we havent returned the character	
+	return -1;		//we havent returned the character	
 }
 
 //This function gets the binary code of the char
-void get_code( char code[] , char ch )
+void get_code( char code[] , unsigned char ch )
 {
 	unsigned int mask=1<<31; //now mask is 1000 0000 til 4 byte complete
 	unsigned int n=ch;

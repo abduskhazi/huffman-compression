@@ -3,8 +3,8 @@
 void encode_file(char* filename)
 {
 	array_t freq;
-	char h_codes[256][25];
-	char code[25]="";
+	char h_codes[256][256];
+	char code[256]="";
 	init_codes(h_codes);
 	FILE* fp=fopen(filename,"r");		//opening a file in read mode 
 	assert(fp!=NULL);		
@@ -34,9 +34,9 @@ void encode_file(char* filename)
 		a->myarray[i]=0;
 	}
 	
-	char ch;
-	
-	while((ch=fgetc(fp))!=EOF)
+	unsigned char ch;
+        for(unsigned char ch = fgetc(fp) ; !feof(fp); ch = fgetc(fp))
+	//while((ch=fgetc(fp))!=EOF)
 	{
 		a->myarray[ch]++;
 		++total;		
@@ -178,32 +178,26 @@ void create_list_array( array_t *a , list_t *l)		//inserting the node in the beg
 	}
 }
 
-void store_code(treeptr t , char code[], char codes[256][25])   //storing the path of all the nodes 
+void store_code(treeptr t , char code[], char codes[256][256])   //storing the path of all the nodes 
 {
-	char temp[25];
+    char temp[256];
 	
     if(t)
     {
      if(t->rlink==0 && t->llink==0)
-        	{
-        	strcpy(codes[t->ch],code);
-		}
-     if(t->llink!=0)
-	{ 
-		strcpy(temp,code);          
-		strcat(temp,"0");
-		store_code(t->llink,temp,codes);
-	}
-	if(t->rlink!=0)
-		{
-		strcpy(temp,code);
-		strcat(temp,"1");
-		store_code(t->rlink,temp,codes);
-		}
-	}
+	strcpy(codes[t->ch],code);
+
+	strcpy(temp,code);          
+	strcat(temp,"0");
+	store_code(t->llink,temp,codes);
+
+	strcpy(temp,code);
+	strcat(temp,"1");
+	store_code(t->rlink,temp,codes);
+    }
 }
 
-void init_codes(char h_codes[256][25])
+void init_codes(char h_codes[256][256])
 {	
 	int i;
 	for(i=0;i<256;i++)
@@ -212,11 +206,11 @@ void init_codes(char h_codes[256][25])
 	}
 }
 
-void compress(array_t *freq, char* filename, char codes[256][25], int total_chars)
+void compress(array_t *freq, char* filename, char codes[256][256], int total_chars)
 {
 	FILE *fp_read, *fp_write;
 	unsigned char ch;
-	char temp[25]="";
+	char temp[256]="";
 	
 	fp_write=fopen("encoded.txt","w");
 	fp_read=fopen(filename,"r");
