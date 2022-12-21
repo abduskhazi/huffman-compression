@@ -37,7 +37,7 @@ void decode_file(char* file_decode)
 		get_code(temp,ch);
 		strcat(code,temp);
 		
-		while( !end )
+		while( !end && total_chars)
 		{
 			local_var=find_char(code,h_codes);
 			end = (local_var == -1);
